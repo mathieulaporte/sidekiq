@@ -28,7 +28,7 @@ class TestProcessor < Minitest::Test
     end
 
     it 'processes as expected' do
-      msg = Sidekiq.dump_json({ 'class' => MockWorker.to_s, 'args' => ['myarg'] })
+      msg = Sidekiq.dump_data({ 'class' => MockWorker.to_s, 'args' => ['myarg'] })
       actor = Minitest::Mock.new
       actor.expect(:processor_done, nil, [@processor])
       @boss.expect(:async, actor, [])
@@ -38,7 +38,7 @@ class TestProcessor < Minitest::Test
     end
 
     it 'passes exceptions to ExceptionHandler' do
-      msg = Sidekiq.dump_json({ 'class' => MockWorker.to_s, 'args' => ['boom'] })
+      msg = Sidekiq.dump_data({ 'class' => MockWorker.to_s, 'args' => ['boom'] })
       begin
         @processor.process(work(msg))
         flunk "Expected #process to raise exception"
@@ -49,7 +49,7 @@ class TestProcessor < Minitest::Test
     end
 
     it 're-raises exceptions after handling' do
-      msg = Sidekiq.dump_json({ 'class' => MockWorker.to_s, 'args' => ['boom'] })
+      msg = Sidekiq.dump_data({ 'class' => MockWorker.to_s, 'args' => ['boom'] })
       re_raise = false
 
       begin
@@ -63,7 +63,7 @@ class TestProcessor < Minitest::Test
 
     it 'does not modify original arguments' do
       msg = { 'class' => MockWorker.to_s, 'args' => [['myarg']] }
-      msgstr = Sidekiq.dump_json(msg)
+      msgstr = Sidekiq.dump_data(msg)
       processor = ::Sidekiq::Processor.new(@boss)
       actor = Minitest::Mock.new
       actor.expect(:processor_done, nil, [processor])
@@ -79,7 +79,7 @@ class TestProcessor < Minitest::Test
 
       describe 'when successful' do
         def successful_job
-          msg = Sidekiq.dump_json({ 'class' => MockWorker.to_s, 'args' => ['myarg'] })
+          msg = Sidekiq.dump_data({ 'class' => MockWorker.to_s, 'args' => ['myarg'] })
           actor = Minitest::Mock.new
           actor.expect(:processor_done, nil, [@processor])
           @boss.expect(:async, actor, [])
@@ -102,7 +102,7 @@ class TestProcessor < Minitest::Test
 
       describe 'when failed' do
         def failed_job
-          msg = Sidekiq.dump_json({ 'class' => MockWorker.to_s, 'args' => ['boom'] })
+          msg = Sidekiq.dump_data({ 'class' => MockWorker.to_s, 'args' => ['boom'] })
           begin
             @processor.process(work(msg))
           rescue TestException

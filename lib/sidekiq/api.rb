@@ -170,7 +170,7 @@ module Sidekiq
 
     def initialize(item, queue_name=nil)
       @value = item
-      @item = Sidekiq.load_json(item)
+      @item = Sidekiq.load_data(item)
       @queue = queue_name || @item['queue']
     end
 
@@ -232,9 +232,9 @@ module Sidekiq
         results = conn.zrangebyscore('retry', score, score)
         conn.zremrangebyscore('retry', score, score)
         results.map do |message|
-          msg = Sidekiq.load_json(message)
+          msg = Sidekiq.load_data(message)
           msg['retry_count'] = msg['retry_count'] - 1
-          conn.lpush("queue:#{msg['queue']}", Sidekiq.dump_json(msg))
+          conn.lpush("queue:#{msg['queue']}", Sidekiq.dump_data(msg))
         end
       end
     end
@@ -253,7 +253,7 @@ module Sidekiq
 
     def schedule(timestamp, message)
       Sidekiq.redis do |conn|
-        conn.zadd(@zset, timestamp.to_s, Sidekiq.dump_json(message))
+        conn.zadd(@zset, timestamp.to_s, Sidekiq.dump_data(message))
       end
     end
 
@@ -301,7 +301,7 @@ module Sidekiq
         end
 
         elements_with_jid = elements.map do |element|
-          message = Sidekiq.load_json(element)
+          message = Sidekiq.load_data(element)
 
           if message["jid"] == jid
             Sidekiq.redis { |conn| conn.zrem(@zset, element) }
@@ -392,7 +392,7 @@ module Sidekiq
         workers.each do |w|
           msg = conn.get("worker:#{w}")
           next unless msg
-          block.call(w, Sidekiq.load_json(msg))
+          block.call(w, Sidekiq.load_data(msg))
         end
       end
     end

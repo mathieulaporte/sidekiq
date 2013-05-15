@@ -34,7 +34,7 @@ class TestWeb < Minitest::Test
         conn.sadd('workers', identity)
         conn.setex("worker:#{identity}:started", 10, Time.now.to_s)
         hash = {:queue => 'critical', :payload => { 'class' => WebWorker.name, 'args' => [1,'abc'] }, :run_at => Time.now.to_i }
-        conn.setex("worker:#{identity}", 10, Sidekiq.dump_json(hash))
+        conn.setex("worker:#{identity}", 10, Sidekiq.dump_data(hash))
       end
 
       get '/workers'
@@ -220,7 +220,7 @@ class TestWeb < Minitest::Test
         4.times { add_worker }
 
         get '/dashboard/stats'
-        @response = Sidekiq.load_json(last_response.body)
+        @response = Sidekiq.load_data(last_response.body)
       end
 
       it 'can refresh dashboard stats' do
@@ -267,7 +267,7 @@ class TestWeb < Minitest::Test
               'at' => score,
               'jid' => 'f39af2a05e8f4b24dbc0f1e4' }
       Sidekiq.redis do |conn|
-        conn.zadd('schedule', score, Sidekiq.dump_json(msg))
+        conn.zadd('schedule', score, Sidekiq.dump_data(msg))
       end
       [msg, score]
     end
@@ -283,7 +283,7 @@ class TestWeb < Minitest::Test
               'jid' => 'f39af2a05e8f4b24dbc0f1e4'}
       score = Time.now.to_f
       Sidekiq.redis do |conn|
-        conn.zadd('retry', score, Sidekiq.dump_json(msg))
+        conn.zadd('retry', score, Sidekiq.dump_data(msg))
       end
       [msg, score]
     end

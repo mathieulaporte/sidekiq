@@ -305,7 +305,7 @@ class TestApi < Minitest::Test
       end
 
       s = '12345'
-      data = Sidekiq.dump_json({ 'payload' => {}, 'queue' => 'default', 'run_at' => Time.now.to_i })
+      data = Sidekiq.dump_data({ 'payload' => {}, 'queue' => 'default', 'run_at' => Time.now.to_i })
       Sidekiq.redis do |c|
         c.multi do
           c.sadd('workers', s)
@@ -337,7 +337,7 @@ class TestApi < Minitest::Test
     end
 
     def add_retry(jid = 'bob', at = Time.now.to_f)
-      payload = Sidekiq.dump_json('class' => 'ApiWorker', 'args' => [1, 'mike'], 'queue' => 'default', 'jid' => jid, 'retry_count' => 2, 'failed_at' => Time.now.utc)
+      payload = Sidekiq.dump_data('class' => 'ApiWorker', 'args' => [1, 'mike'], 'queue' => 'default', 'jid' => jid, 'retry_count' => 2, 'failed_at' => Time.now.utc)
       Sidekiq.redis do |conn|
         conn.zadd('retry', at.to_s, payload)
       end

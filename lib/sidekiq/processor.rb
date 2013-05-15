@@ -39,7 +39,7 @@ module Sidekiq
 
       @actual_work_thread = Thread.current
       begin
-        msg = Sidekiq.load_json(msgstr)
+        msg = Sidekiq.load_data(msgstr)
         klass  = msg['class'].constantize
         worker = klass.new
         worker.jid = msg['jid']
@@ -79,7 +79,7 @@ module Sidekiq
           conn.sadd('workers', identity)
           conn.setex("worker:#{identity}:started", EXPIRY, Time.now.to_s)
           hash = {:queue => queue, :payload => msg, :run_at => Time.now.to_i }
-          conn.setex("worker:#{identity}", EXPIRY, Sidekiq.dump_json(hash))
+          conn.setex("worker:#{identity}", EXPIRY, Sidekiq.dump_data(hash))
         end
       end
 

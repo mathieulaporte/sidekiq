@@ -30,7 +30,7 @@ module Sidekiq
       alias_method :raw_push_old, :raw_push
       def raw_push(payload)
         [payload].flatten.each do |item|
-          marshalled = Sidekiq.load_json(Sidekiq.dump_json(item))
+          marshalled = Sidekiq.load_data(Sidekiq.dump_data(item))
           marshalled['class'].constantize.new.perform(*marshalled['args'])
         end
 

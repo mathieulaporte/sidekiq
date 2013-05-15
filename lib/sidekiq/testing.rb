@@ -6,7 +6,7 @@ module Sidekiq
 
       def raw_push(payloads)
         payloads.each do |job|
-          job['class'].constantize.jobs << Sidekiq.load_json(Sidekiq.dump_json(job))
+          job['class'].constantize.jobs << Sidekiq.load_data(Sidekiq.dump_data(job))
         end
         true
       end

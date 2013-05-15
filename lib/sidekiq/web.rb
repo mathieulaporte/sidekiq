@@ -50,7 +50,7 @@ module Sidekiq
           Sidekiq.redis do |conn|
             conn.smembers('workers').map do |w|
               msg = conn.get("worker:#{w}")
-              msg ? [w, Sidekiq.load_json(msg)] : nil
+              msg ? [w, Sidekiq.load_data(msg)] : nil
             end.compact.sort { |x| x[1] ? -1 : 1 }
           end
         end
@@ -63,7 +63,7 @@ module Sidekiq
       def retries_with_score(score)
         Sidekiq.redis do |conn|
           results = conn.zrangebyscore('retry', score, score)
-          results.map { |msg| Sidekiq.load_json(msg) }
+          results.map { |msg| Sidekiq.load_data(msg) }
         end
       end
 
@@ -151,7 +151,7 @@ module Sidekiq
       @count = (params[:count] || 25).to_i
       @name = params[:name]
       (@current_page, @total_size, @messages) = page("queue:#{@name}", params[:page], @count)
-      @messages = @messages.map {|msg| Sidekiq.load_json(msg) }
+      @messages = @messages.map {|msg| Sidekiq.load_data(msg) }
       slim :queue
     end
 
@@ -173,7 +173,7 @@ module Sidekiq
     get '/retries' do
       @count = (params[:count] || 25).to_i
       (@current_page, @total_size, @retries) = page("retry", params[:page], @count)
-      @retries = @retries.map {|msg, score| [Sidekiq.load_json(msg), score] }
+      @retries = @retries.map {|msg, score| [Sidekiq.load_data(msg), score] }
       slim :retries
     end
 
@@ -222,7 +222,7 @@ module Sidekiq
     get '/scheduled' do
       @count = (params[:count] || 25).to_i
       (@current_page, @total_size, @scheduled) = page("schedule", params[:page], @count)
-      @scheduled = @scheduled.map {|msg, score| [Sidekiq.load_json(msg), score] }
+      @scheduled = @scheduled.map {|msg, score| [Sidekiq.load_data(msg), score] }
       slim :scheduled
     end
 
@@ -248,7 +248,7 @@ module Sidekiq
       redis_stats   = Sidekiq.redis { |conn| conn.info }.select{ |k, v| redis_keys.include? k }
 
       content_type :json
-      Sidekiq.dump_json({
+      Sidekiq.dump_data({
         sidekiq: {
           processed:  sidekiq_stats.processed,
           failed:     sidekiq_stats.failed,

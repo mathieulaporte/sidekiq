@@ -22,6 +22,6 @@ table class="queue table table-hover table-bordered table-striped"
           = msg['args']
       td
         form action="#{root_path}queues/#{@name}/delete" method="post"
-          input name="key_val" value="#{Sidekiq.dump_json(msg)}" type="hidden"
+          input name="key_val" value="#{Sidekiq.dump_data(msg)}" type="hidden"
           input.btn.btn-danger.btn-mini type="submit" name="delete" value="#{t('Delete')}" data-confirm="#{t('AreYouSure')}"
 == slim :_paging, :locals => { :url => "#{root_path}queues/#{@name}" }

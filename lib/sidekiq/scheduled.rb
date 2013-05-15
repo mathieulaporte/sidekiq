@@ -33,7 +33,7 @@ module Sidekiq
                 # going wrong between the time jobs are popped from the scheduled queue and when
                 # they are pushed onto a work queue and losing the jobs.
                 while message = conn.zrangebyscore(sorted_set, '-inf', now, :limit => [0, 1]).first do
-                  msg = Sidekiq.load_json(message)
+                  msg = Sidekiq.load_data(message)
                   # Pop item off the queue and add it to the work queue. If the job can't be popped from
                   # the queue, it's because another process already popped it so we can move on to the
                   # next one.

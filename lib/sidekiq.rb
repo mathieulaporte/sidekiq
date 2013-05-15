@@ -89,6 +89,14 @@ module Sidekiq
     @server_chain
   end
 
+  def self.load_data(data)
+    self.load_json(Zlib.inflate(data))
+  end
+
+  def self.dump_data(data)
+    Zlib.deflate(self.dump_json(data))
+  end
+
   def self.load_json(string)
     JSON.parse(string)
   end

@@ -69,7 +69,7 @@ class TestMiddleware < Minitest::Test
     end
 
     it 'executes middleware in the proper order' do
-      msg = Sidekiq.dump_json({ 'class' => CustomWorker.to_s, 'args' => [$recorder] })
+      msg = Sidekiq.dump_data({ 'class' => CustomWorker.to_s, 'args' => [$recorder] })
 
       Sidekiq.server_middleware do |chain|
         # should only add once, second should be ignored

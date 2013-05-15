@@ -82,7 +82,7 @@ module Sidekiq
             delay = seconds_to_delay(count)
             logger.debug { "Failure! Retry #{count} in #{delay} seconds" }
             retry_at = Time.now.to_f + delay
-            payload = Sidekiq.dump_json(msg)
+            payload = Sidekiq.dump_data(msg)
             Sidekiq.redis do |conn|
               conn.zadd('retry', retry_at.to_s, payload)
             end

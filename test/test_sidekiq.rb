@@ -4,11 +4,11 @@ require 'helper'
 class TestSidekiq < Minitest::Test
   describe 'json processing' do
     it 'loads json' do
-      assert_equal ({"foo" => "bar"}), Sidekiq.load_json("{\"foo\":\"bar\"}")
+      assert_equal ({"foo" => "bar"}), Sidekiq.load_data("{\"foo\":\"bar\"}")
     end
 
     it 'dumps json' do
-      assert_equal "{\"foo\":\"bar\"}", Sidekiq.dump_json({ "foo" => "bar" })
+      assert_equal "{\"foo\":\"bar\"}", Sidekiq.dump_data({ "foo" => "bar" })
     end
   end
 

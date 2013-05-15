@@ -18,12 +18,12 @@ class TestScheduled < Minitest::Test
 
     it 'should empty the retry and scheduled queues up to the current time' do
       Sidekiq.redis do |conn|
-        error_1 = Sidekiq.dump_json('class' => ScheduledWorker.name, 'args' => ["error_1"], 'queue' => 'queue_1')
-        error_2 = Sidekiq.dump_json('class' => ScheduledWorker.name, 'args' => ["error_2"], 'queue' => 'queue_2')
-        error_3 = Sidekiq.dump_json('class' => ScheduledWorker.name, 'args' => ["error_3"], 'queue' => 'queue_3')
-        future_1 = Sidekiq.dump_json('class' => ScheduledWorker.name, 'args' => ["future_1"], 'queue' => 'queue_4')
-        future_2 = Sidekiq.dump_json('class' => ScheduledWorker.name, 'args' => ["future_2"], 'queue' => 'queue_5')
-        future_3 = Sidekiq.dump_json('class' => ScheduledWorker.name, 'args' => ["future_3"], 'queue' => 'queue_6')
+        error_1 = Sidekiq.dump_data('class' => ScheduledWorker.name, 'args' => ["error_1"], 'queue' => 'queue_1')
+        error_2 = Sidekiq.dump_data('class' => ScheduledWorker.name, 'args' => ["error_2"], 'queue' => 'queue_2')
+        error_3 = Sidekiq.dump_data('class' => ScheduledWorker.name, 'args' => ["error_3"], 'queue' => 'queue_3')
+        future_1 = Sidekiq.dump_data('class' => ScheduledWorker.name, 'args' => ["future_1"], 'queue' => 'queue_4')
+        future_2 = Sidekiq.dump_data('class' => ScheduledWorker.name, 'args' => ["future_2"], 'queue' => 'queue_5')
+        future_3 = Sidekiq.dump_data('class' => ScheduledWorker.name, 'args' => ["future_3"], 'queue' => 'queue_6')
 
         conn.zadd("retry", (Time.now - 60).to_f.to_s, error_1)
         conn.zadd("retry", (Time.now - 50).to_f.to_s, error_2)
