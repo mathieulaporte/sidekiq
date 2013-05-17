@@ -248,7 +248,7 @@ module Sidekiq
       redis_stats   = Sidekiq.redis { |conn| conn.info }.select{ |k, v| redis_keys.include? k }
 
       content_type :json
-      Sidekiq.dump_data({
+      Sidekiq.dump_json({
         sidekiq: {
           processed:  sidekiq_stats.processed,
           failed:     sidekiq_stats.failed,
